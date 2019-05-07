@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Push</title>
+    <style type="text/css">
+        .container {
+            width: 800px;
+            margin: 0 auto;
+        }
+
+        label {
+            width: 100px;
+            text-align: right;
+        }
+
+        .button {
+            padding: 10px;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="container">
+    <p>Hello Web socket</p>
+
+    <div class="form">
+        <div class="form-panel">
+            <label for="from">from</label>
+            <input id="from">
+        </div>
+        <div class="form-panel">
+            <label for="to">to</label>
+            <input id="to">
+        </div>
+        <div class="form-panel">
+            <label for="message">Message</label>
+            <input id="message">
+        </div>
+        <dev class="form-panel" id="category">
+            <label for="text">Text</label>
+            <input name="category" type="radio" value="text" checked="true"/>
+
+            <label for="image">Image</label>
+            <input name="category" type="radio" value="image"/>
+
+            <label for="sound">Sound</label>
+            <input name="category" type="radio" value="sound"/>
+
+            <label for="video">Video</label>
+            <input name="category" type="radio" value="video"/>
+
+
+        </dev>
+        <div class="button-group">
+
+            <button class="button" onclick="submit()">Submit
+            </button>
+
+
+            <button class="button" onclick="connect()">Connect
+            </button>
+        </div>
+
+        <div id="result" class="result">
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function getParameters() {
+            var p = {
+                'to': document.querySelector("#to").value,
+                'from': document.querySelector('#from').value,
+                'category': document.querySelector("input[name=category]:checked").value,
+                'message': document.querySelector('#message').value
+            };
+
+
+            return p;
+        }
+
+        function connect() {
+            var p = getParameters();
+            var uri = document.URL.replace("http", "ws");
+
+            var from = document.querySelector("#from").value;
+            ws = new WebSocket(uri + 'session/' + from);
+
+            var result = document.querySelector('#result');
+            ws.onmessage = function (e) {
+                result.innerHTML = e.data + '<br/>' + result.innerHTML;
+            }
+
+            ws.onclose = function () {
+                result.innerHTML = '已下线<br/>' + result.innerHTML;
+            }
+        }
+
+
+        function submit() {
+            if (ws) {
+                var p = getParameters();
+
+                var msg = JSON.stringify(p);
+                console.info(msg);
+                ws.send(msg);
+
+                console.info("ws is not null.");
+            } else {
+                console.info('ws is null');
+            }
+        }
+
+        console.log(ws);
+    </script>
+</div>
+</body>
+</html>
