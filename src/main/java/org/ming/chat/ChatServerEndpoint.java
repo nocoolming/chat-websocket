@@ -7,6 +7,7 @@ import org.ming.chat.store.SessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -48,5 +49,14 @@ public class ChatServerEndpoint {
         }
 
         sessionStore.send(sessionStore.get(msg.getTo()), message);
+    }
+
+    @OnClose
+    public void onClose(
+            @PathParam("username") String username,
+            Session session) {
+        log.info("removed: " + username);
+
+        sessionStore.remove(username);
     }
 }
