@@ -1,45 +1,61 @@
 package org.ming.chat;
 
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-
-@EnableWebSocket
-@SpringBootApplication
 public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    private static Logger log = LoggerFactory.getLogger(Application.class);
+
+    public static void main(String[] args) throws MqttException {
+        log.info("Hello MQTT");
+        String topic = "mqtt/chat";
+        String content = "hello 哈哈";
+        int qos = 1;
+        String broker = "tcp://192.168.1.129:1883";
+        String userName = "admin";
+        String password = "admin";
+        String clientId = "provider";
+        // 内存存储
+        MemoryPersistence persistence = new MemoryPersistence();
+
+        try {
+            // 创建客户端
+            MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
+            // 创建链接参数
+            MqttConnectOptions connOpts = new MqttConnectOptions();
+            // 在重新启动和重新连接时记住状态
+            connOpts.setCleanSession(false);
+            // 设置连接的用户名
+            connOpts.setUserName(userName);
+            connOpts.setPassword(password.toCharArray());
+            // 建立连接
+            sampleClient.connect(connOpts);
+            // 创建消息
+            MqttMessage message = new MqttMessage(content.getBytes());
+            // 设置消息的服务质量
+            message.setQos(qos);
+            // 发布消息
+            sampleClient.publish(topic, message);
+            // 断开连接
+            sampleClient.disconnect();
+            // 关闭客户端
+            sampleClient.close();
+        } catch (MqttException me) {
+            System.out.println("reason " + me.getReasonCode());
+            System.out.println("msg " + me.getMessage());
+            System.out.println("loc " + me.getLocalizedMessage());
+            System.out.println("cause " + me.getCause());
+            System.out.println("excep " + me);
+            me.printStackTrace();
+        }
     }
 
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
 
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
-            }
-
-        };
-    }
-
-
-    @Bean
-    public ServerEndpointExporter serverEndpointExporter() {
-        return new ServerEndpointExporter();
-    }
-
-    @Bean
-    public ChatServerEndpoint pushServerEndpoint() {
-        return new ChatServerEndpoint();
-    }
 }
+
