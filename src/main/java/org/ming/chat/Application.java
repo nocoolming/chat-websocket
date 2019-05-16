@@ -17,7 +17,7 @@ public class Application {
         String topic = "mqtt/chat";
         String content = "hello 哈哈";
         int qos = 1;
-        String broker = "tcp://192.168.1.129:1883";
+        String broker = "tcp://localhost:1883";
         String userName = "admin";
         String password = "admin";
         String clientId = "provider";
