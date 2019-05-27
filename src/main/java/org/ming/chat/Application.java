@@ -14,7 +14,7 @@ public class Application {
 
     public static void main(String[] args) throws MqttException {
         log.info("Hello MQTT");
-        String topic = "mqtt/chat";
+        String topic = "mqtt/finch";
         String content = "hello 哈哈";
         int qos = 1;
         String broker = "tcp://localhost:1883";

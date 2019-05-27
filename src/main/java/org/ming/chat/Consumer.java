@@ -4,9 +4,9 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 public class Consumer {
-    public static void main(String[] args) throws MqttException {
+    public static void main1(String[] args) throws MqttException {
         String HOST = "tcp://localhost:1883";
-        String TOPIC = "mqtt/chat";
+        String TOPIC = "mqtt/finch";
         int qos = 1;
         String clientid = "consumer";
         String userName = "admin";
